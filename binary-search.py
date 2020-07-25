@@ -5,10 +5,11 @@ from math import ceil
 
 # pygame params
 pygame.init()
-screen = pygame.display.set_mode((800, 800))
+screen = pygame.display.set_mode((810, 810))
+screen.fill((255, 255, 255))
 
 # variables
-arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1]
+arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 n = 5
 
 # settings
@@ -19,6 +20,7 @@ h = 800 / ROW
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 128)
+BLACK = (0, 0, 0)
 
 
 class Cell:
@@ -26,20 +28,22 @@ class Cell:
         self.i = x
         self.j = y
         self.number = str(n)
-        self.blockSize = 50
+        self.blockSize = w
 
     def __repr__(self):
         return 'Cell'
 
     def show(self):
         posOfRect = (self.i, self.j, self.blockSize, self.blockSize)
+        posOfRectBorder = (self.i, self.j, self.blockSize, self.blockSize)
+        pygame.draw.rect(screen, GREEN, posOfRectBorder, 10)
         pygame.draw.rect(screen, WHITE, posOfRect)
         self.showText()
         pygame.display.update()
 
     def showText(self):
         font = pygame.font.Font('freesansbold.ttf', 32)
-        text = font.render(self.number, True, BLUE)
+        text = font.render(self.number, True, BLACK)
         font_w, font_h = text.get_size()
 
         # распологаем в центре текст
@@ -75,12 +79,6 @@ def quickSort(arr):
     return quickSort(l_nums) + e_nums + quickSort(b_nums)
 
 
-cell1 = Cell(100, 100, 10)
-cell2 = Cell(210, 100, 12)
-cell1.show()
-cell2.show()
-
-
 def makeFormatedArray(a):
     amountOfArrays = len(a) // COLS
     last_array = len(a) % COLS
@@ -94,32 +92,20 @@ def makeFormatedArray(a):
 
 def filFormatedArray():
     filledArray = makeFormatedArray(arr)
+    step = w
     for i in range(ROW):
         index = 10 * i
+        x = 5
+        y = 85 * i + 10
         for j in range(len(filledArray[i])):
-            filledArray[i][j] = arr[index]
+            filledArray[i][j] = Cell(x, y, arr[index])
+            filledArray[i][j].show()
             index += 1
+            x += step
     return filledArray
 
 
 filFormatedArray()
-
-
-def fill():
-    cells = [0 for i in range(ROW)]
-    for i in range(ROW):
-        cells[i] = [0 for i in range(COLS)]
-    print(cells)
-
-    for i in range(ROW):
-        for j in range(COLS):
-            if i < 1:
-                print(f'j= {j}, i = {i}')
-                cells[i][j] = Cell(j*50, 10, arr[j])
-            else:
-                cells[i][j] = Cell(j*50, 100, arr[j])
-            cells[i][j].show()
-    print(cells)
 
 
 while True:
