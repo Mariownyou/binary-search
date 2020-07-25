@@ -2,6 +2,7 @@ import random
 import pygame
 import sys
 from math import ceil
+from time import sleep
 
 # pygame params
 pygame.init()
@@ -9,7 +10,7 @@ screen = pygame.display.set_mode((900, 900))
 screen.fill((255, 255, 255))
 
 # variables
-arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+arr = [1, 4, 3, 7, 1, 2, 5, 3, 2, 8, 33, 1, 8, 9, 3]
 n = 5
 
 # settings
@@ -27,7 +28,7 @@ class Cell:
     def __init__(self, x, y, n):
         self.i = x
         self.j = y
-        self.number = str(n)
+        self.number = int(n)
         self.blockSize = w
         self.is_choosen = False
 
@@ -47,13 +48,33 @@ class Cell:
 
     def showText(self):
         font = pygame.font.Font('freesansbold.ttf', 32)
-        text = font.render(self.number, True, BLACK)
+        text = font.render(str(self.number), True, BLACK)
         font_w, font_h = text.get_size()
 
         # распологаем в центре текст
         text_x = self.i + (self.blockSize - font_w) / 2
         text_y = self.j + (self.blockSize - font_h) / 2
         screen.blit(text, (text_x, text_y))
+
+
+def makeFormatedArray(arr):
+    amountOfArrays = len(arr) // COLS
+    last_array = len(arr) % COLS
+    formatedArray = [0 for i in range(amountOfArrays)]
+    for i in range(amountOfArrays):
+        formatedArray[i] = [0 for i in range(COLS)]
+    if len(arr) % COLS > 0:
+        formatedArray.append([0 for i in range(last_array)])
+    return formatedArray
+
+
+def filArrayWithCells():
+    listOfCells = [i for i in arr]
+    x = 0
+    y = 0
+    for i in range(len(listOfCells)):
+        listOfCells[i] = Cell(x, y, listOfCells[i])
+    return listOfCells
 
 
 def binarySearch(n):
@@ -73,34 +94,18 @@ def binarySearch(n):
 
 
 def quickSort(arr):
+    a = filArrayWithCells()
     if len(arr) <= 1:
         return arr
     else:
-        q = random.choice(arr)
-    l_nums = [n for n in arr if n < q]
-    e_nums = [q] * arr.count(q)
-    b_nums = [n for n in arr if n > q]
+        q = random.choice(a)
+        q.is_choosen = True
+        print(q.number)
+    l_nums = [n for n in arr if n < q.number]
+    e_nums = [q.number] * arr.count(q.number)
+    b_nums = [n for n in arr if n > q.number]
+    drawRect(a)
     return quickSort(l_nums) + e_nums + quickSort(b_nums)
-
-
-def makeFormatedArray(a):
-    amountOfArrays = len(a) // COLS
-    last_array = len(a) % COLS
-    formatedArray = [0 for i in range(amountOfArrays)]
-    for i in range(amountOfArrays):
-        formatedArray[i] = [0 for i in range(COLS)]
-    if len(a) % COLS > 0:
-        formatedArray.append([0 for i in range(last_array)])
-    return formatedArray
-
-
-def filArrayWithCells():
-    listOfCells = [i for i in arr]
-    x = 0
-    y = 0
-    for i in range(len(listOfCells)):
-        listOfCells[i] = Cell(x, y, listOfCells[i])
-    return listOfCells
 
 
 def drawRect(a):
@@ -121,9 +126,7 @@ def drawRect(a):
             x += gap + step
             index += 1
 
-
-drawRect(filArrayWithCells())
-
+quickSort(arr)
 
 while True:
     ev = pygame.event.poll()
