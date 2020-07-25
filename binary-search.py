@@ -5,7 +5,7 @@ from math import ceil
 
 # pygame params
 pygame.init()
-screen = pygame.display.set_mode((810, 810))
+screen = pygame.display.set_mode((900, 900))
 screen.fill((255, 255, 255))
 
 # variables
@@ -29,6 +29,7 @@ class Cell:
         self.j = y
         self.number = str(n)
         self.blockSize = w
+        self.is_choosen = False
 
     def __repr__(self):
         return 'Cell'
@@ -36,7 +37,10 @@ class Cell:
     def show(self):
         posOfRect = (self.i, self.j, self.blockSize, self.blockSize)
         posOfRectBorder = (self.i, self.j, self.blockSize, self.blockSize)
-        pygame.draw.rect(screen, GREEN, posOfRectBorder, 10)
+        if self.is_choosen:
+            pygame.draw.rect(screen, GREEN, posOfRectBorder, 10)
+        else:
+            pygame.draw.rect(screen, BLACK, posOfRectBorder, 10)
         pygame.draw.rect(screen, WHITE, posOfRect)
         self.showText()
         pygame.display.update()
@@ -90,22 +94,35 @@ def makeFormatedArray(a):
     return formatedArray
 
 
-def filFormatedArray():
-    filledArray = makeFormatedArray(arr)
+def filArrayWithCells():
+    listOfCells = [i for i in arr]
+    x = 0
+    y = 0
+    for i in range(len(listOfCells)):
+        listOfCells[i] = Cell(x, y, listOfCells[i])
+    return listOfCells
+
+
+def drawRect(a):
+    cellsArray = makeFormatedArray(arr)
+    x = 0
+    y = 0
     step = w
+    gap = 10
+    index = 0
     for i in range(ROW):
-        index = 10 * i
         x = 5
-        y = 85 * i + 10
-        for j in range(len(filledArray[i])):
-            filledArray[i][j] = Cell(x, y, arr[index])
-            filledArray[i][j].show()
+        y += gap + i * step
+        index = i * 10
+        for j in range(len(cellsArray[i])):
+            a[index].i = x
+            a[index].j = y
+            a[index].show()
+            x += gap + step
             index += 1
-            x += step
-    return filledArray
 
 
-filFormatedArray()
+drawRect(filArrayWithCells())
 
 
 while True:
